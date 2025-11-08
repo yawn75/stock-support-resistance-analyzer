@@ -75,6 +75,18 @@ COMMON_TICKERS = {
     '코스피지수': '^KS11',
     '코스닥지수': '^KQ11',
 
+    # 미국 지수
+    'S&P500': '^GSPC',
+    'S&P 500': '^GSPC',
+    'SPX': '^GSPC',
+    'SP500': '^GSPC',
+    'NASDAQ': '^IXIC',
+    '나스닥': '^IXIC',
+    'DOW': '^DJI',
+    'DJIA': '^DJI',
+    '다우존스': '^DJI',
+    '다우': '^DJI',
+
     # 한국 주요 종목 (코스피)
     '삼성전자': '005930.KS',
     '삼성전자우': '005935.KS',
@@ -303,14 +315,21 @@ def get_ticker_info(ticker_input):
                 ticker_obj = yf.Ticker(symbol)
                 info = ticker_obj.info
                 name = info.get('longName', info.get('shortName', ticker_input))
-                # 한국 지수는 KRW (포인트)
+                # 한국 지수는 KRW (포인트), 미국 지수는 USD (포인트)
                 if symbol in ['^KS11', '^KQ11']:
                     return symbol, name, 'KRW'
+                elif symbol in ['^GSPC', '^IXIC', '^DJI']:
+                    return symbol, name, 'USD'
                 else:
                     currency = info.get('currency', 'USD')
                     return symbol, name, currency
             except:
-                return symbol, ticker_input, 'KRW' if symbol in ['^KS11', '^KQ11'] else 'USD'
+                if symbol in ['^KS11', '^KQ11']:
+                    return symbol, ticker_input, 'KRW'
+                elif symbol in ['^GSPC', '^IXIC', '^DJI']:
+                    return symbol, ticker_input, 'USD'
+                else:
+                    return symbol, ticker_input, 'USD'
 
         # 한국 주식인지 확인
         elif symbol.endswith('.KS') or symbol.endswith('.KQ'):
